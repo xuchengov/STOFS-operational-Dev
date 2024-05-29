@@ -15,11 +15,10 @@
 
 
 # ---------------------------> Begin ...
-# set -x
+set -x
   set +H
 
  seton='-xa'
-#  setoff='+xa'
   set $seton
 
  fn_this_script=stofs_3d_atl_create_restart_combine_rtofs_stofs.sh
@@ -38,7 +37,6 @@
 
   echo "dir_wk_pwd = " ` pwd`
 
-  #rm -f ${dir_wk}/*
 
   pgmout=pgmout_restart_from_rtofs.$$
   rm -f $pgmout
@@ -56,17 +54,12 @@
     fi   
 
   yyyymmddhr_rst=${yyyymmddhr_rerun}
-  #yyyymmddhr_rst=$($NDATE -24 $yyyymmddhr_rerun)
-  #yyyymmdd_rerun=${yyyymmddhr_rerun:0:8}
   yyyymmdd_rst=${yyyymmddhr_rst:0:8}
 
   echo "Date to rerun the model: yyyymmddhr_rerun = " $yyyymmddhr_rerun
   echo "Date of restart file (nowcast:24 hr before): yyyymmddhr_rst= $yyyymmddhr_rst"
 
 # --------------------------> filenames/COMOUT dirfile (to save restart.nc) 
-  #fn_restart_rtofs_ftn=hotstart.nc
-  #fn_restart_rtofs_std=${RUN}.${cycle}.restart.rtofs.nc
-  #fn_src_hotstart_from_oper_fullPath=${COMOUT_PREV}/${RUN}.${cycle}.hotstart.stofs3d.nc  
   
 
 # ---------------------------> Global Variables
@@ -108,8 +101,6 @@ idx_y2_3dz=815
    cnt_3d=0; 
    for k in ${days[@]}; do
 
-      #list_dates="$list_dates,`date -d "${yyyymmdd_rst} ${k} days ago" +%Y%m%d`"
-      #date_k=`date -d "${yyyymmdd_rst} ${k} days ago" +%Y%m%d`
       date_k=$(finddate.sh ${yyyymmdd_rst} d-${k})
 
 
@@ -254,7 +245,6 @@ if [[ $cnt_2d -gt 1 ]] && [[ $cnt_3d -gt 1 ]]; then
   ncrename -d MT,time -d X,xlon -d Y,ylat  test03_3Dth_nu.nc
   ncap2 -O -S $fn_nco_ssh test03_3Dth_nu.nc test04_3Dth_nu.nc
   ncks -CO -x -v Date,MT,X,Y  test04_3Dth_nu.nc  $fn_SSH_1_nc 
-  # cp -f  SSH_${yyyymmdd}_${cycle}_3Dth_nu.nc SSH_3Dth_nu.nc
 
 
   rm -f tmp0?_3Dth_nu.nc
@@ -262,7 +252,6 @@ if [[ $cnt_2d -gt 1 ]] && [[ $cnt_3d -gt 1 ]]; then
   ncrename -d MT,time -d Depth,lev -d X,xlon -d Y,ylat  -v u,water_u -v v,water_v  $fn_merged_3dz  tmp01_3Dth_nu.nc
   ncap2 -O -S $fn_nco_tsuv  tmp01_3Dth_nu.nc tmp02_3Dth_nu.nc
   ncks -O -x -v Depth,Date,MT,X,Y tmp02_3Dth_nu.nc  $fn_TSUV_1_nc
-  # cp -f TSUV_${yyyymmdd}_${cycle}_3Dth_nu.nc TSUV_3Dth_nu.nc
   
 
 # --------------------------> create {elev2D.th.nc, SAL_3D.th.nc, TEM_3D.th.nc, uv3D.th.nc}
@@ -282,14 +271,12 @@ if [[ $cnt_2d -gt 1 ]] && [[ $cnt_3d -gt 1 ]]; then
  ln -sf ${FIXstofs3d}/stofs_3d_atl_ocean.shp      ocean.shp 
  ln -sf ${FIXstofs3d}/stofs_3d_atl_ocean.shx      ocean.shx 
 
- #ln -sf ${PYstofs3d}/pylib.py                pylib.py
- #ln -sf ${fn_input_gen_hotstart}             gen_hot_from_nc.in                
 
   
 # -------------------------> restart_from_rtofs.nc
   $fn_exe_gen_hotstart    >> $pgmout 2> errfile
 
-  export err=$?; #err_chk
+  export err=$?;
   pgm=$fn_exe_gen_hotstart
 
 
@@ -306,7 +293,6 @@ if [[ $cnt_2d -gt 1 ]] && [[ $cnt_3d -gt 1 ]]; then
 
   # ----------> rename/archive hotstart.nc
   fn_restart_rtofs_ftn=hotstart.nc
-  #fn_rst_rtofs=${fn_restart_rtofs_ftn}
   fn_restart_rtofs_std=${RUN}.${cycle}.restart.rtofs.nc
 
   if [[ $(find ${fn_restart_rtofs_ftn} -type f -size  +20G 2>/dev/null) ]]; then
@@ -336,7 +322,6 @@ fi
   cnt_files=0
   for k in ${days[@]}; do
 
-      #date_k=`date -d "${PDYHH_FCAST_BEGIN:0:8} ${k} days ago" +%Y%m%d`
       date_k=$(finddate.sh ${PDYHH_FCAST_BEGIN:0:8} d-${k})
 
       fn_hotstart_oper_chk=${COMROOT}/${RUN}.${date_k}/${RUN}.${cycle}.hotstart.stofs3d.nc
@@ -368,16 +353,15 @@ fi
        flag_exist_rst_oper=1
 
        msg="Found:  ${fn_src_hotstart_from_oper_fullPath}"
-       echo "${msg}"; echo "${msg}"  >> $jlogfile
+       echo "${msg}"; echo "${msg}"  
 
     else
        msg="Not found: ${fn_src_hotstart_from_oper_fullPath}"
-       echo "${msg}"; echo "${msg}"  >> $jlogfile
+       echo "${msg}"; echo "${msg}"  
     fi
 
 
   # combine oper & rtofs
-  # fn_out_restart_cbn=${RUN}.${cycle}.restart.combine.nc
 
   fn_py_input_hotstart_from_oper=hotstart_from_oper.nc
   fn_py_input_hotstart_from_rtofs=hotstart_from_hycom.nc
@@ -404,7 +388,6 @@ fi
   fi
   
 
-  #fn_restart_rerun=${COMOUTrerun}/${RUN}.${cycle}.restart.nc 
   fn_restart_rerun=${COMOUT}/${RUN}.${cycle}.hotstart.stofs3d.nc
 
   cp -pf ${fn_restart_rerun} ${fn_restart_rerun}_non_combined_rtofs
@@ -417,7 +400,6 @@ fi
   
      echo -e ${msg}; echo;
  
-  # elif [[ ${flag_exist_rst_oper} -eq 1 ]]; then
     elif [[ ${flag_rst_rtofs_success} -eq 1 ]]; then
      cp -pfL ${fn_restart_rtofs_std} ${fn_restart_rerun}
 

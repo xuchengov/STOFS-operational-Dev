@@ -12,8 +12,8 @@
 #   - separated hourly: stofs_3d_atl.t12z.conus.east.f{000,001,...,048}.grib2   #
 #   - combined hourly:  stofs_3d_atl.t12z.conus.east.cwl.grib2                  #
 #  (2) Puerto Rico area                                                         #
-    - separated hourly: stofs_3d_atl.t12z.puertori.f{000,001,...,048}.grib2     #
-    - combined hourly:  stofs_3d_atl.t12z.puertori.cwl.grib2                    #
+#    - separated hourly: stofs_3d_atl.t12z.puertori.f{000,001,...,048}.grib2     #
+#    - combined hourly:  stofs_3d_atl.t12z.puertori.cwl.grib2                    #
 #                                                                               #
 #  Remarks:                                                                     #
 #                                                             September, 2022   #
@@ -21,7 +21,7 @@
 
 
 # ---------------------------> Begin ...
-# set -x
+set -x
 
   fn_this_sh="stofs_3d_atl_netcdf2grib.sh"
 
@@ -41,8 +41,6 @@
   fin_mask_conus_east_us=${FIXstofs3d}/stofs_3d_atl_awips_mask_conus_us_east.txt
   fin_mask_puertorico=${FIXstofs3d}/stofs_3d_atl_awips_mask_puerto_rico.txt
 
-  # cp -fp ${fin_mask_conus_east_us}   ${DATA}
-  # cp -fp ${fin_mask_puertorico}    ${DATA}
 
   fn_exe_gen_grib2=${EXECstofs3d}/stofs_3d_atl_netcdf2grib
 
@@ -86,19 +84,15 @@
 
 
 # ------------------> create AWIPS grib2 files
-     #yyyymmdd_hh_ref=$((${PDYHH_FCAST_BEGIN} + 1))
      yyyymmdd_hh_ref=${PDYHH_FCAST_BEGIN}
 
+     . prep_step
      ${fn_exe_gen_grib2} conus cwl  ${yyyymmdd_hh_ref} ${fin_mask_conus_east_us} ${fn_adc_merged} 3000
-  
+ 
+     . prep_step 
      ${fn_exe_gen_grib2} puertori cwl ${yyyymmdd_hh_ref} ${fin_mask_puertorico}  ${fn_adc_merged} 5000   
 
 
-     # ./estofs_netcdf2grib conus cwl 2022050112 conus_mask.txt cwl.fort.63.nc 3000
-     # ./estofs_netcdf2grib conus cwl  2022050112 puertorico_mask.txt cwl.fort.63.nc 5000
-
-
-#     for fhr in $(seq -f "%03g" 0 48); do
      for fhr in $(seq -f "%03g" 0 96); do
 
       cp -f fort.3${fhr} ${RUN}.${cycle}.conus.east.f${fhr}.grib2
@@ -164,13 +158,22 @@
                 $DBNROOT/bin/dbn_alert MODEL STOFS_GB2 $job ${COMOUT}/${fn_grb}
                  export err=$?; err_chk
              done
-  
-             $DBNROOT/bin/dbn_alert MODEL STOFS_GB2 $job ${COMOUT}/${RUN}.${cycle}.conus.east.cwl.grib2
-             export err=$?; err_chk
-  
-             $DBNROOT/bin/dbn_alert MODEL STOFS_GB2 $job ${COMOUT}/${RUN}.${cycle}.puertori.cwl.grib2
-             export err=$?; err_chk
-    
+           fi
+
+           if [ $SENDDBN = YES ]; then
+              $DBNROOT/bin/dbn_alert MODEL STOFS_GB2 $job ${COMOUT}/${RUN}.${cycle}.conus.east.cwl.grib2
+              export err=$?; err_chk
+
+              $DBNROOT/bin/dbn_alert MODEL STOFS_GB2 $job ${COMOUT}/${RUN}.${cycle}.puertori.cwl.grib2
+              export err=$?; err_chk
+           fi
+
+           if [ $SENDDBN_NTC = "YES" ]; then
+              for grid in conus.east puertori ; do
+                 type=cwl            
+                 $DBNROOT/bin/dbn_alert NTC_LOW $NET $job $COMOUT/wmo/grib2_${RUN}.${cycle}.${grid}.${type}
+                 export err=$?; err_chk
+              done
            fi
 
         else
@@ -178,7 +181,7 @@
            echo $msg; echo $msg >> $pgmout
         fi
           
-export err=$?; #err_chk  
+export err=$?;
 
 
 echo 

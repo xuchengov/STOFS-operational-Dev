@@ -11,7 +11,7 @@
 ############################################################################
 
 # ---------------------------> Begin ...
-# set -x
+set -x
 
 echo 'The script stofs_3d_atl_create_surface_forcing_hrrr.sh started ' 
 
@@ -42,12 +42,6 @@ echo 'The script stofs_3d_atl_create_surface_forcing_hrrr.sh started '
 
 
 # --------------------------> Region of interest
-#  LONMIN=-98.1
-#  LONMAX=-59.9
-#  LATMIN=8.49
-#  LATMAX=45.87
-
-# (2023/8)
   LONMIN=-98.5
   LONMAX=-49.5
   LATMIN=5.5
@@ -114,19 +108,18 @@ echo 'The script stofs_3d_atl_create_surface_forcing_hrrr.sh started '
          LIST_fn_final+="${fn_hrrr_k_sz} "
       else
          echo "WARNING: " $fn_hrrr_k_sz ": filesize $filesize less than $FILESIZE"
-         echo "WARNING: " $fn_hrrr_k_sz ": filesize $filesize less than $FILESIZE"  >> $jlogfile
+         echo "WARNING: " $fn_hrrr_k_sz ": filesize $filesize less than $FILESIZE"  
       fi
 
    else
       echo "WARNING: "  $fn_hrrr_k_sz " does not exist"
-      echo "WARNING: "  $fn_hrrr_k_sz " does not exist"  >> $jlogfile
+      echo "WARNING: "  $fn_hrrr_k_sz " does not exist"  
    fi
  done
 
 
 
 # -------------------> variables of OI (grb2)
-#list_var_oi='TMP:2 m above|RH:2 m above|SPFH:2 m above|PRES:surface|PRATE|UGRD:10 m above|VGRD:10 m above|ALBDO:surface|DSWRF:surface|USWRF:surface|DLWRF:surface|ULWRF:surface'
    list_var_oi='TMP:2 m above|RH:2 m above|SPFH:2 m above|MSLMA:mean|PRATE|UGRD:10 m above|VGRD:10 m above|ALBDO:surface|DSWRF:surface|USWRF:surface|DLWRF:surface|ULWRF:surface'
 
    iyr=`echo ${yyyymmdd_prev} | cut -c1-4`
@@ -150,19 +143,19 @@ echo 'The script stofs_3d_atl_create_surface_forcing_hrrr.sh started '
 
       fn_varOI=HRRR_voi_${str_xxx_cnt}.grb2
       $WGRIB2  -s  $fn_hrrr_k  | egrep "$list_var_oi" | $WGRIB2  -i  $fn_hrrr_k  -grib  $fn_varOI  >> $pgmout 2> errfile 
-      export err=$?;  #err_chk
+      export err=$?; 
 
       fn_roi=HRRR_voi_rio_${str_xxx_cnt}.grb2
       $WGRIB2  $fn_varOI  -small_grib ${LONMIN}:${LONMAX} ${LATMIN}:${LATMAX} $fn_roi   >> $pgmout 2> errfile
-      export err=$?;  #err_chk
+      export err=$?; 
 
       fn_0_rnVar_with_xy=HRRR_voi_rio_0rename_with_xy_${str_xxx_cnt}.nc 
       $WGRIB2  $fn_roi -netcdf $fn_0_rnVar_with_xy    >> $pgmout 2> errfile
-      export err=$?;  #err_chk
+      export err=$?; 
 
       fn_0_rnVar=HRRR_voi_rio_0rename_${str_xxx_cnt}.nc
       ncks -CO -x -v y,x $fn_0_rnVar_with_xy  $fn_0_rnVar    >> $pgmout 2> errfile
-      export err=$?;  #err_chk
+      export err=$?; 
 
       fn_1time=HRRR_voi_rio_0rename_1time_${str_xxx_cnt}.nc
 
@@ -170,7 +163,7 @@ echo 'The script stofs_3d_atl_create_surface_forcing_hrrr.sh started '
       let hr_cnt_since_hr00=${ihr}+${cnt}
 
       ncap2 -Oh -s "tin=${hr_cnt_since_hr00}"  -s "time@units=$str_time"  -s "time@base_date ={ $iyr, $imon, $iday, 0}" -S $fn_nco_update_time_varName -v ${fn_0_rnVar} ${fn_1time}    >> $pgmout 2> errfile
-      export err=$?;  #err_chk
+      export err=$?; 
 
  done 
 
@@ -180,7 +173,7 @@ echo 'The script stofs_3d_atl_create_surface_forcing_hrrr.sh started '
   find . -size 0  -exec rm -f {} \;
 
   ncrcat -O HRRR_voi_rio_0rename_1time_???.nc $fn_merged_sflux
-  export err=$?;  #err_chk
+  export err=$?; 
 
 
 
@@ -204,9 +197,6 @@ if [ -f $fn_link_src ]; then
     cpreq -pf $fn_link_src ${COMOUTrerun}/${fn_hrrr_prc_std}
     cpreq -pf $fn_link_src ${COMOUTrerun}/${fn_hrrr_air_std}
 
-    #cpreq -pf $fn_link_src ${COMOUTrerun}/${fn_hrrr_rad_date_tag}
-    #cpreq -pf $fn_link_src ${COMOUTrerun}/${fn_hrrr_prc_date_tag}
-    #cpreq -pf $fn_link_src ${COMOUTrerun}/${fn_hrrr_air_date_tag}
 
     echo " sflux/hrrr forcing files: reanmes & copied to COMOUT "
 
@@ -216,7 +206,7 @@ else
     echo " sflux/hrrr forcing file not created or file size is too small: $fn_link_src "
 fi
 
-export err=$?;  #err_chk
+export err=$?; 
 
 
 echo

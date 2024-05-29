@@ -12,7 +12,7 @@
 
 
 # ---------------------------> Begin ...
-# set -x
+set -x
 
 echo 'stofs_3d_atl_create_surface_forcing_gfs.sh started ' 
 
@@ -37,15 +37,12 @@ echo 'stofs_3d_atl_create_surface_forcing_gfs.sh started '
   fn_txt_sflux_inputs=${FIXstofs3d}/stofs_3d_atl_sflux_inputs.txt
 
   fn_gfs_rad_schism=sflux_rad_1.0001.nc
-  #fn_gfs_rad_date_tag=${RUN}.gfs.rad.nfcast.${PDYHH_FCAST_BEGIN:0:8}.${cycle}.nc
   fn_gfs_rad_std=${RUN}.${cycle}.gfs.rad.nc
 
   fn_gfs_prc_schism=sflux_prc_1.0001.nc
-  #fn_gfs_prc_date_tag=${RUN}.gfs.prc.nfcast.${PDYHH_FCAST_BEGIN:0:8}.${cycle}.nc
   fn_gfs_prc_std=${RUN}.${cycle}.gfs.prc.nc
 
   fn_gfs_air_schism=sflux_air_1.0001.nc
-  #fn_gfs_air_date_tag=${RUN}.gfs.air.nfcast.${PDYHH_FCAST_BEGIN:0:8}.${cycle}.nc
   fn_gfs_air_std=${RUN}.${cycle}.gfs.air.nc
    
 
@@ -56,10 +53,6 @@ echo 'stofs_3d_atl_create_surface_forcing_gfs.sh started '
     LATMIN=7.347
     LATMAX=52.5904
 
-   # LONMIN=-98.5
-   # LONMAX=-59.5
-   # LATMIN=8.0
-   # LATMAX=50.751
 
 
 # ---------------> Dates
@@ -71,8 +64,6 @@ echo 'stofs_3d_atl_create_surface_forcing_gfs.sh started '
     iyr=`echo ${yyyymmdd_prev} | cut -c1-4`
     imon=`echo ${yyyymmdd_prev} | cut  -c5-6`
     iday=`echo ${yyyymmdd_prev} | cut -c7-8`
-    #ihr=12  # 00
-    #hr_1st_file=0
  
 # --------------------------> default: create list 
     list_fn_yest_t06z=`ls ${COMINgfs}/gfs.${yyyymmdd_prev}/06/atmos/gfs.t06z.pgrb2.0p25.f006`                >> $pgmout 2> errfile
@@ -102,7 +93,6 @@ echo 'stofs_3d_atl_create_surface_forcing_gfs.sh started '
      LIST_fn_all_1+="${list_fn_today_t06z[@]} "
      LIST_fn_all_1+="${list_fn_today_t12z[@]}"
 
-     #for a in ${LIST_fn_all};  do echo $a; done
 
 
 # ---------------------------> backup list
@@ -157,12 +147,12 @@ for flag_route_no in ${list_route_no[@]}; do
          echo "File size OK: $fn_gfs_k_sz : filesize $filesize GE $FILESIZE"
       else
          echo "WARNING: " $fn_gfs_k_sz ": filesize $filesize less than $FILESIZE"
-         echo "WARNING: " $fn_gfs_k_sz ": filesize $filesize less than $FILESIZE"  >> $pgmout  # >> $jlogfile
+         echo "WARNING: " $fn_gfs_k_sz ": filesize $filesize less than $FILESIZE"  >> $pgmout   
       fi
 
    else
       echo "WARNING: "  $fn_gfs_k_sz " does not exist"
-      echo "WARNING: "  $fn_gfs_k_sz " does not exist"  >> $jlogfile
+      echo "WARNING: "  $fn_gfs_k_sz " does not exist"  
    fi
  done
 
@@ -206,7 +196,6 @@ if [[ ${N_list_1} -gt 1 ]]; then
     for a in ${LIST_fn_final_qa_sz[@]}; do echo $a; done
 
   else
-	  # LIST_fn_final_qa_sz=(${A1[@]})
     echo "List from LIST_fn_final_qa_sz_1"
  
   fi
@@ -262,21 +251,18 @@ if [[ ${N_LIST_fn_final_qa_sz} -gt ${N_dim_cr_min_cntList} ]]; then
    str_xxx_cnt=`seq -f "%03g" $cnt 1 $cnt`
    echo "Processing($str_xxx_cnt): " $fn_gfs_k
 
-   # FYI:
-   # ln -sf $fn_gfs_k sorce_gfs_no_${str_xxx_cnt} 
-
 
    fn_varOI=GFS_voi_${str_xxx_cnt}.grb2
       $WGRIB2  -s  $fn_gfs_k  | egrep "$list_var_oi" | $WGRIB2  -i  $fn_gfs_k  -grib  $fn_varOI  >> $pgmout 2> errfile
-      export err=$?; #err_chk
+      export err=$?;
 
    fn_roi=iGFS_voi_rio_${str_xxx_cnt}.grb2
       $WGRIB2  $fn_varOI  -small_grib ${LONMIN}:${LONMAX} ${LATMIN}:${LATMAX} $fn_roi   >> $pgmout 2> errfile
-      export err=$?; #err_chk
+      export err=$?;
 
    fn_0_rnVar=GFS_voi_rio_0rename_${str_xxx_cnt}.nc
       $WGRIB2  $fn_roi -netcdf $fn_0_rnVar  >> $pgmout 2> errfile
-      export err=$?; #err_chk
+      export err=$?;
 
    fn_out=GFS_sflux_no_${str_xxx_cnt}.nc
 
@@ -285,12 +271,11 @@ if [[ ${N_LIST_fn_final_qa_sz} -gt ${N_dim_cr_min_cntList} ]]; then
    let hr_cnt_since_hr00=${ihr}+${cnt}
 
      ncap2 -Oh -s "tin=${hr_cnt_since_hr00}"  -s "time@units=$str_time"  -s "time@base_date ={ $iyr, $imon, $iday, 0}" -S $fn_nco_update_time_varName -v ${fn_0_rnVar}  $fn_out   >> $pgmout 2> errfile
-     export err=$?; #err_chk
+     export err=$?;
 
  done
 
 # merge GFS_sflux_no_xxx.nc
-# fn_merged_sflux=gfs_merge_v1.nc
  rm -f ${fn_merged_sflux};
 
  echo fn_merged_sflux= $fn_merged_sflux
@@ -299,7 +284,6 @@ if [[ ${N_LIST_fn_final_qa_sz} -gt ${N_dim_cr_min_cntList} ]]; then
     find . -size 0  -exec rm -f {} \;
 
     list_GFS_sflux_no=`ls GFS_sflux_no_*.nc`
-    #if [ ! -z "$list_GFS_sflux_no???" ]; then
     if [ ! -z "$list_GFS_sflux_no" ]; then
       ncrcat -O  GFS_sflux_no_*.nc  $fn_merged_sflux
     fi
@@ -309,15 +293,6 @@ fi   # if [[ ${N_LIST_fn_final_qa_sz} -gt ${N_dim_cr_min_cntList} ]]; then
 
 
 # ---------------------------------> QC & archive
-#list_var_ori=(elev2D.th TEM_3D.th SAL_3D.th uv3D.th TEM_nu SAL_nu)
-#list_var_std=(elev2dth tem3dth sal3dth uv3dth temnu salnu) 
-
-
-#N_dim_cr_min=48
-#N_dim_cr_max=74
-#list_fn_sz_cr=(2000000)
-#list_end_time_step=(4.0)
-#list_offset_time=(1.0)
 
 # N_dim_cr_min: prev data: 124-12=112
 N_dim_cr_min=110

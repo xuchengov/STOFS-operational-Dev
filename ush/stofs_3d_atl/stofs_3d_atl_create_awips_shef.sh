@@ -13,7 +13,7 @@
 
 
 # ---------------------------> Begin ...
-# set -x
+set -x
 
   fn_this_sh="stofs_3d_atl_create_awips_shef.sh"
 
@@ -22,7 +22,7 @@
   pgmout=${fn_this_sh}.$$
   rm -f $pgmout
 
-  mkdir -p ${DATA}/dir_shef    # cd ${DATA}
+  mkdir -p ${DATA}/dir_shef   
   cd ${DATA}/dir_shef
   echo "Current working directory=" `pwd`
 
@@ -43,8 +43,6 @@
   fn_py_gen_nc=${PYstofs3d}/generate_station_timeseries.py
   fn_exe_gen_nc2shef=${EXECstofs3d}/stofs_3d_atl_netcdf2shef
 
-  #type=cwl; YMDH=2022053012; fin_nc=schout_timeseries_at_obs_locations_${YMDH:0:8}.nc; fin_shef_navd88_mllw=stations_navd88_mllw.txt
-  #./estofs_netcdf2shef con $type $YMDH ${fin_nc} ${fin_shef_navd88_mllw}
 
 
 # ------------------> check file existence
@@ -57,7 +55,7 @@
   echo "In : checking file existence: "
  
 
-  dir_input=${DATA}/outputs/     #dir_input=outputs/
+  dir_input=${DATA}/outputs/    
   num_missing_files=0
   for k_no in ${list_staout_no[@]};  
   do
@@ -65,7 +63,7 @@
     for k_fn in ${list_fn_base[@]}; 
     do
 
-       fn_k=${dir_input}${k_fn}${k_no}    # fn_k=outputs/${k_fn}${k_no}
+       fn_k=${dir_input}${k_fn}${k_no}   
        if [ -s ${fn_k} ]; then
           echo "checked: ${fn_k} exists"
        
@@ -81,8 +79,8 @@
 # ------------------> create 6-min station time series file (.nc)
      yyyymmdd_hh_ref=${PDYHH_NCAST_BEGIN:0:4}-${PDYHH_NCAST_BEGIN:4:2}-${PDYHH_NCAST_BEGIN:6:2}-${cyc}
 
-     dir_input=${DATA}/outputs/          # dir_input=./outputs/
-     dir_work_shef=${DATA}/dir_shef      # dir_output=./
+     dir_input=${DATA}/outputs/         
+     dir_work_shef=${DATA}/dir_shef     
 
      python ${fn_py_gen_nc}  --date ${yyyymmdd_hh_ref}  --input_dir ${dir_input}  --output_dir ${dir_work_shef}  >> $pgmout 2> errfile
 
@@ -100,8 +98,6 @@
      
      cpreq -pf ${dir_work_shef}/${fn_py_out_nc_6min} ${dir_work_shef}/${fn_sta_cwl_t_s_vel_nfcast_std}
 
-     # archive & prep shef input
-     # fn_py_out_nc_30min_fcast0_48hr=staout_zeta_30min_fcast0_48_for_shefFTN.nc
 
      export err=$?
 
@@ -125,7 +121,7 @@
            echo $msg; echo $msg >> $pgmout
         fi
           
-export err=$?; #err_chk  
+export err=$?; 
 
 
 # ------------------> create 30-min AWIPS SHEF files (.nc)
@@ -139,7 +135,6 @@ export err=$?; #err_chk
      fn_py_out_nc_30min_fcast0_48hr=staout_zeta_30min_fcast0_48_for_shefFTN.nc
      rm -f ${fn_py_out_nc_30min_fcast0_48hr}
      
-     # ncks -v zeta -v station_name -d time,239,,5 ${fn_py_out_nc_6min_shef_only}  -O ${fn_py_out_nc_30min_fcast0_48hr}
      ncks -d time,239,,5 ${fn_py_out_nc_6min_shef_only}  -O ${fn_py_out_nc_30min_fcast0_48hr}     
 
   
@@ -149,8 +144,6 @@ export err=$?; #err_chk
   type=cwl; 
   YMDH=${PDYHH_FCAST_BEGIN}
   
-  #mkdir -p DIR_SHEF_fort_files
-  #cd ${DIR_SHEF_fort_files}
   
   rm -f fort.5???
 
@@ -206,8 +199,8 @@ export err=$?; #err_chk
       msg="Creation/Archiving of ${fn_awips_shef} was successfully created"
       echo $msg; echo $msg >> $pgmout
 
-      if [ $SENDDBN = YES ]; then
-        $DBNROOT/bin/dbn_alert MODEL STOFS_WMO $job ${COMOUT}/${fn_awips_shef}
+      if [ $SENDDBN_NTC = YES ]; then
+        $DBNROOT/bin/dbn_alert NTC_LOW $NET $job $COMOUT/wmo/${fn_awips_shef}
         export err=$?; err_chk
       fi
  
@@ -217,7 +210,7 @@ export err=$?; #err_chk
     fi
 
 
-export err=$?; #err_chk
+export err=$?;
 
 echo 
 echo "${fn_this_sh} completed "

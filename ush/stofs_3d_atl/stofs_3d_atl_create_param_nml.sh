@@ -13,7 +13,7 @@
 
 
 # ---------------------------> Begin ...
-# set -x
+set -x
 
   fn_this_script="stofs_3d_atl_create_param_nml.sh"
   echo "${fn_this_script}  started "
@@ -49,7 +49,6 @@
 
   str_yyyymmdd_cycle=${PDYHH_FCAST_BEGIN:0:8}${cycle}
     
-# fn_param_modelRun_timeTag=param.nml_fcast_${str_yyyymmdd_cycle}_ncast_${PDYHH_NCAST_BEGIN:0:8}${cycle}
   fn_param_modelRun_date_tag=${RUN}.param.nfcast.${PDYHH_FCAST_BEGIN:0:8}.${cycle}.nml
   fn_param_modelRun_std=${RUN}.${cycle}.param.nml
 
@@ -63,14 +62,13 @@
      sz_test=`wc -c $fn_param_modelRun_date_tag | awk '{print $1}'`
 
      if [ $sz_test -ge $FILESIZE_min ]; then
-        #cp  -pf ${fn_param_modelRun_date_tag}  ${COMOUTrerun}
         cp  -pf ${fn_param_modelRun_date_tag}  ${COMOUTrerun}/${fn_param_modelRun_std}
      fi
 
   else
     echo " ${fn_param_modelRun_date_tag} not created or file size is too small: " $fn_param_modelRun_date_tag
   fi
-  export err=$?; #err_chk 
+  export err=$?;
 
 
 echo 

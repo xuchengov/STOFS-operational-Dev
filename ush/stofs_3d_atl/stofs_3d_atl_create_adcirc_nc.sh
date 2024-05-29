@@ -14,7 +14,7 @@
 
 
 # ---------------------------> Begin ...
-# set -x
+set -x
 
   fn_this_sh="stofs_3d_atl_create_adcirc_nc.sh"
 
@@ -29,13 +29,11 @@
   fn_node_id_cityPoly_adc=${FIXstofs3d}/stofs_3d_atl_node_id_city_poly_adcirc.txt
 
   fn_py_gen_nc=${PYstofs3d}/generate_adcirc.py
-  # python generate_adcirc.py --input_filename ./outputs/out2d_1.nc --output_dir ./extract/
 
 
 # ------------------> check file existence
 # staout_x: listed in *_staout.json
 
-  # list_num=(1 2 3)
     list_num=(1 2 3 4 5 6 7 8 9 10)
 
 
@@ -75,7 +73,6 @@
    echo ${PDYHH_NCAST_BEGIN:0:8}, ${PDYHH_FCAST_BEGIN:0:8}, ${PDYHH_FCAST_END:0:8}
 
 
-   # list_YMD=(${PDYHH_NCAST_BEGIN:0:8} ${PDYHH_FCAST_BEGIN:0:8} ${PDYHH_FCAST_END:0:8})
    
    PDY_FCAST_DAY2=${PDYp1}
    PDY_FCAST_DAY3=${PDYp2}
@@ -83,15 +80,11 @@
    list_YMD=(${PDYHH_NCAST_BEGIN:0:8} ${PDYHH_FCAST_BEGIN:0:8} ${PDY_FCAST_DAY2} ${PDY_FCAST_DAY3} ${PDYHH_FCAST_END:0:8})
    echo "list_YMD= ${list_YMD[@]}"
 
-   #cnt=-1
    for k_no in ${list_num[@]};
    do
 
-     #let cnt=cnt+1
-     #YMD_k_no=${list_YMD[${cnt}]}
 
      echo "python - processing: ${dir_input}/out2d_${k_no}.nc: "   #  for ${YMD_k_no}: "
-     # python ${fn_py_gen_nc}  --input_filename ${dir_input}/out2d_${k_no}.nc  --output_dir ${dir_output}  >> $pgmout 2> errfile
      python ${fn_py_gen_nc}  --input_filename ${dir_input}/out2d_${k_no}.nc  --input_city_identifier_file  ${fn_node_id_cityPoly_adc}  --output_dir ${dir_output}  >> $pgmout 2> errfile 
      echo "Done - ${dir_input}/out2d_${k_no}.nc"
    done

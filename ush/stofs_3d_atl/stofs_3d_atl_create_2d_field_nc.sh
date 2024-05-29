@@ -13,8 +13,7 @@
 
 
 # ---------------------------> Begin ...
-# set -x
-#  set +H
+ set -x
 
   echo " stofs_3d_atl_create_2d_field_nc.sh began" 
 
@@ -25,19 +24,16 @@
   idx_day_no=$1
   echo "idx_day_no=${idx_day_no}"
 
-  ##list_day_no=(${idx_day_no})
 
   cd ${DATA}
 
 # ------------------> check file existence
-  #list_day_no=(1 2 3)
 
   list_fn_base=(horizontalVelX  horizontalVelY  out2d  salinity  temperature  zCoordinates)
 
   echo "In stofs_3d_atl_create_2d_field_nc.sh: checking file existence: "
  
   num_missing_files=0
-  ## for k_no in ${list_day_no[@]};  
   k_no=${idx_day_no}
    
     for k_fn in ${list_fn_base[@]}; 
@@ -57,9 +53,6 @@
 # ------------------> create 2D nc: intpl
   yyyymmdd_hh_ref=${PDYHH_NCAST_BEGIN:0:4}-${PDYHH_NCAST_BEGIN:4:2}-${PDYHH_NCAST_BEGIN:6:2}-${cyc}
 
-  #for k_no in ${list_day_no[@]};
-
-
 
   list_hr_range=(n001_012 n013_024 f001_012 f013_024 f025_036 f037_048  \
 	                           f049_060 f061_072 f073_084 f085_096)  
@@ -69,15 +62,11 @@
      let i_hr_range=$((stack_no-1))
      str_hr_range=${list_hr_range[${i_hr_range}]}
 
-      #fn_2d_field_std=${RUN}.${cycle}.${str_hr_range}.field2d.nc
-      #fn_2d_field_date_tag=${RUN}.field2d.${str_hr_range}.${PDYHH_FCAST_BEGIN:0:8}.${cycle}.nc
-
 
       echo "Processing: results/stack_no = ${stack_no}" 
 
       mkdir -p results
       python ${PYstofs3d}/extract_slab_fcst_netcdf4.py  --date ${yyyymmdd_hh_ref}  --stack ${stack_no}  >> $pgmout 2> errfile
-      #python ${PYstofs3d}/extract_slab_fcst_netcdf4.py  --date ${yyyymmdd_hh_ref}  --stack ${stack_no}
 
 
    msg="Completed: extract_slab_fcst_netcdf4.py, stack_no: ${idx_day_no} "
@@ -86,7 +75,6 @@
 
   # cp files
       fn_out_py=results/schout_2d_${stack_no}.nc
-      #fn_2d_field_std=${RUN}.${cycle}.${str_hr_range}.field2d.nc
       fn_2d_field_std=${RUN}.${cycle}.field2d_${str_hr_range}.nc
 
       echo pwd = `pwd`
@@ -94,11 +82,9 @@
       echo fn_2d_field_std=${fn_2d_field_std}
 
       if [[ -f ${fn_out_py}  ]]; then
-           # 2023/8/16
            ncatted -a long_name,elev,o,c,"water surface elevation above xgeoid20b"  ${fn_out_py}
 
            cpreq -pf ${fn_out_py}  ${COMOUT}/${fn_2d_field_std}
-           #cpreq -pf ${fn_out_py}  ${COMOUT}/${fn_2d_field_date_tag}
 
            msg="Done cp: fn_out_py = ${fn_out_py}"$'\n'; 
 	   echo -e $msg; echo;
@@ -118,7 +104,7 @@
 
 
 
-export err=$?; #err_chk  
+export err=$?;
 
 echo 
 echo "stofs_3d_atl_create_2d_field_nc.sh  completed "

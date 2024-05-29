@@ -10,7 +10,7 @@
 ################################################################################
 
 # ---------------------------> Begin ...
-# set -x
+set -x
 
   echo 'stofs_3d_atl_create_bctides_in.sh started'
 
@@ -68,14 +68,13 @@ fn_bctides_in=bctides.in
 
      if [ $sz_test -ge $FILESIZE_min ]; then
         cpreq -f  bctides.in  $fn_bctides_in_datetime_tag
-        # cp  -pf ${fn_bctides_in_datetime_tag}  ${COMOUTrerun}
         cp  -pf ${fn_bctides_in_datetime_tag}  ${COMOUTrerun}/${fn_bctides_in_std}
      fi
 
   else
     echo " ${fn_bctides_in} not created or file size is too small: " $fn_bctides_in
   fi
-  export err=$?; #err_chk
+  export err=$?;
 
 
 echo 

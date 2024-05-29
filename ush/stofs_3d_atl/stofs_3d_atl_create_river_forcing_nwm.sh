@@ -12,7 +12,7 @@
 ################################################################################
 
 # ---------------------------> Begin ...
-# set -x
+set -x
 
 echo 'The script stofs_3d_atl_create_river_forcing_nwm.sh started ' 
 
@@ -37,9 +37,6 @@ echo 'The script stofs_3d_atl_create_river_forcing_nwm.sh started '
 
 # ---------------------------> Global Variables
 
-  # fn_py_create_river_th=${PYstofs3d}/river_th_extract2asci.py
-  
-  # v6.1 Linlin
   fn_py_create_river_th=${PYstofs3d}/gen_sourcesink.py
 
 
@@ -56,8 +53,6 @@ echo 'The script stofs_3d_atl_create_river_forcing_nwm.sh started '
  fn_reloc_map=stofs_3d_atl_river_relocate_map.txt
  fn_src_sink_in=stofs_3d_atl_river_source_sink.in
  
- #fn_msource_th=${FIXstofs3d}/stofs_3d_atl_river_msource.th
- #fn_vsink_th=${FIXstofs3d}/stofs_3d_atl_river_vsink.th 
 
  cp -f  ${PYstofs3d}/relocate_source_feeder_lean.py  relocate_source_feeder_lean.py
  cp -f  ${FIXstofs3d}/${fn_src_sink_before_reloc} source_sink.in.before_relocate
@@ -66,8 +61,6 @@ echo 'The script stofs_3d_atl_create_river_forcing_nwm.sh started '
  cp -f  ${FIXstofs3d}/${fn_sink_conus_json} sinks_conus.json
  cp -f  ${FIXstofs3d}/${fn_reloc_map} relocate_map.txt
  cp -f  ${FIXstofs3d}/${fn_src_sink_in} source_sink.in
- # cp -f  ${FIXstofs3d}/${fn_msource_th} msource.th
- # cp -f  ${FIXstofs3d}/${fn_vsink_th} vsink.th
 
 
 # ---------------------------> Dates
@@ -76,7 +69,6 @@ echo 'The script stofs_3d_atl_create_river_forcing_nwm.sh started '
 
 
 # ------> nowcast/forecast cycle(s) & hr
-#   current_CC=$CC_CURRENT
 
 
 # ---------------------------> default: create list of nwm files
@@ -89,7 +81,6 @@ echo 'The script stofs_3d_atl_create_river_forcing_nwm.sh started '
  list_fn_today_t06z=`ls ${COMINnwm}/nwm.${yyyymmdd_today}/medium_range_mem1/nwm.t06z.medium_range.channel_rt_1.f0{0,1,2,3,4,5,6,7,8,9}?.conus.nc`
  list_fn_today_t06z_2=`ls ${COMINnwm}/nwm.${yyyymmdd_today}/medium_range_mem1/nwm.t06z.medium_range.channel_rt_1.f1{0,1}?.conus.nc` 
 
-# LIST_fn_all=($list_fn_yest_t06z $list_fn_yest_t12z $list_fn_yest_t18z $list_fn_today_t00z $list_fn_today_t06z)  
  
  LIST_fn_all_1="${list_fn_yest_t06z} "
  LIST_fn_all_1+="${list_fn_yest_t12z[@]} "
@@ -98,22 +89,12 @@ echo 'The script stofs_3d_atl_create_river_forcing_nwm.sh started '
  LIST_fn_all_1+="${list_fn_today_t06z[@]} "
  LIST_fn_all_1+="${list_fn_today_t06z_2[@]}"
 
- #LIST_fn_all_1=(${LIST_fn_all_1[@]})
-
-  #echo ${#LIST_fn_all_1[@]}
-
-  #A=${LIST_fn_all_1[@]}; for a in ${A[@]}; do echo $a; done
-  
-  #echo "Raw list: LIST_fn_all_1"
-  #for a in ${LIST_fn_all_1[@]}; then echo $a; done
-
 
 # ---------------------------> backup: create list of nwm files
  list_fn_yest_t06z=`ls ${COMINnwm}/nwm.${yyyymmdd_prev}/medium_range_mem1/nwm.t06z.medium_range.channel_rt_1.f006.conus.nc`
 
  # 96hr:: list_fn_yest_t12z=`ls ${COMINnwm}/nwm.${yyyymmdd_prev}/medium_range_mem1/nwm.t12z.medium_range.channel_rt_1.f0{0,1,2,3,4,5,6,7}?.conus.nc`
  list_fn_yest_t12z=`ls ${COMINnwm}/nwm.${yyyymmdd_prev}/medium_range_mem1/nwm.t12z.medium_range.channel_rt_1.f0{0,1,2,3,4,5,6,7,8,9}?.conus.nc`
- #list_fn_yest_t12z_2=`ls ${COMINnwm}/nwm.${yyyymmdd_prev}/medium_range_mem1/nwm.t12z.medium_range.channel_rt_1.f1{0,1}?.conus.nc`
  list_fn_yest_t12z_2=`ls ${COMINnwm}/nwm.${yyyymmdd_prev}/medium_range_mem1/nwm.t12z.medium_range.channel_rt_1.f1{0,1,2}?.conus.nc`
 
  LIST_fn_all_2="${list_fn_yest_t06z} "
@@ -140,7 +121,7 @@ for flag_route_no in ${list_route_no[@]}; do
     LIST_fn_all=$LIST_fn_all_2 
  fi	 
 
- echo "flag_route_no = $flag_route_no"; #sleep 1
+ echo "flag_route_no = $flag_route_no";
 
  LIST_fn_final=''
  for fn_nwm_k_sz in $LIST_fn_all
@@ -155,12 +136,12 @@ for flag_route_no in ${list_route_no[@]}; do
          LIST_fn_final+="${fn_nwm_k_sz} "
       else
          echo "WARNING: " $fn_nwm_k_sz ": filesize $filesize less than $FILESIZE"
-         echo "WARNING: " $fn_nwm_k_sz ": filesize $filesize less than $FILESIZE"  >> $jlogfile
+         echo "WARNING: " $fn_nwm_k_sz ": filesize $filesize less than $FILESIZE"  
       fi
 
    else
       echo "WARNING: "  $fn_nwm_k_sz " does not exist"
-      echo "WARNING: "  $fn_nwm_k_sz " does not exist"  >> $jlogfile
+      echo "WARNING: "  $fn_nwm_k_sz " does not exist"  
    fi
  done
 
@@ -171,8 +152,6 @@ for flag_route_no in ${list_route_no[@]}; do
  fi
 done # for flag_route_no in 
 
- #A=$LIST_fn_final_1; for a in ${A[@]}; do echo $a; done
- # A=$LIST_fn_final_2; for a in ${A[@]}; do echo $a; done
 
  
  N_list_1=${#LIST_fn_final_1[@]}
@@ -187,10 +166,7 @@ done # for flag_route_no in
   N_list_1=${#A1[@]}; echo; echo "N_list_1 = $N_list_1"; echo
   N_list_2=${#B2[@]}; echo; echo "N_list_2 = $N_list_2"; echo;
 
-  #N_list_target=73
 
-# if [[ ${N_list_1} > 0 ]] && [[ ${N_list_1} < ${N_list_target} ]] && [[ ${N_list_2} > ${N_list_1} ]]; then 
-# if [[ ${N_list_1} -gt 0 ]] && [[ ${N_list_1} -lt ${N_list_target} ]] && [[ ${N_list_2} -gt ${N_list_1} ]]; then
 if [[ ${N_list_1} -gt 1 ]]; then
 
   LIST_fn_final=${A1[@]}
@@ -244,7 +220,6 @@ fi
 # ------------------> create river vsource.th 
 # vsink.th & msource.th are static files for v.6.1 grid
 
-  #str_yyyy_mm_dd_hr=`date -d ${PDYHH_NCAST_BEGIN:0:8}  +%Y-%m-%d`-${cyc}
    str_yyyy_mm_dd_hr=${PDYHH_NCAST_BEGIN:0:4}-${PDYHH_NCAST_BEGIN:4:2}-${PDYHH_NCAST_BEGIN:6:2}-${cyc}
 
   echo 'Beginning date of river data (th) (yyyy_mm_dd_hr) = '  $str_yyyy_mm_dd_hr
@@ -254,7 +229,7 @@ fi
   if [ ! -z "${list_nwm_files}" ]; then
      python $fn_py_create_river_th  $str_yyyy_mm_dd_hr   >> $pgmout 2> errfile
 
-     export err=$?; #err_chk
+     export err=$?;
      pgm=$fn_py_create_river
      if [ $err -eq 0 ]; then
         msg=`echo python  completed normally`
@@ -276,9 +251,6 @@ fi
 if [ 1 -eq 1 ]; then
 
 # ------------------> QC & archive/rename files
- # cp -f  ${FIXstofs3d}/${fn_msource_th} msource.th
- # cp -f  ${FIXstofs3d}/${fn_vsink_th} vsink.th
-
 
 # (1) msource.th
   fn_msource_th_std=${RUN}.${cycle}.msource.th 
@@ -292,9 +264,9 @@ if [ 1 -eq 1 ]; then
      fi
   else
     echo " river forcing  file not created or file size is too small: " $fn_msource_th
-    echo " river forcing  file not created or file size is too small: " $fn_msource_th  >> $jlogfile
+    echo " river forcing  file not created or file size is too small: " $fn_msource_th  
   fi
-  export err=$?; #err_chk
+  export err=$?;
 
 
 # (2) vsink.th
@@ -309,13 +281,12 @@ if [ 1 -eq 1 ]; then
      fi
   else
     echo " river forcing  file not created or file size is too small: " $fn_vsink_th
-    echo " river forcing  file not created or file size is too small: " $fn_vsink_th  >> $jlogfile
+    echo " river forcing  file not created or file size is too small: " $fn_vsink_th  
   fi
-  export err=$?; #err_chk
+  export err=$?;
 
 
 # (3) vsource.th
-# list_riv_src_sink=(vsource vsink)
   list_riv_src_sink=(vsource)
 
 for str_fn_river_th in ${list_riv_src_sink[@]}; do
@@ -328,9 +299,6 @@ for str_fn_river_th in ${list_riv_src_sink[@]}; do
 
    echo " QA/QC: fn_river_th = ${fn_river_th}"
 
- #N_rows_riv_th_ori=`cat ${fn_river_th} | wc -l`  
- #if [[ -f ${fn_river_th} ]] && [[ `cat ${fn_river_th} | wc -l` -ge 2 ]]; then
- #if [[ -f ${fn_river_th} ]] && [[ ${N_rows_riv_th_ori} -ge 2 ]]; then
  
  if [[ -f ${fn_river_th} ]]; then
    N_rows_riv_th_ori=`cat ${fn_river_th} | wc -l`	 
@@ -345,17 +313,13 @@ for str_fn_river_th in ${list_riv_src_sink[@]}; do
 
  if [[ ${N_rows_riv_th_ori} -ge ${N_list_min} ]]; then
 
-   #cp -f ${fn_river_th} ${fn_river_th_ori}
-   #cp -f ${fn_river_th} ${fn_riv_wk}
-
-   #N_rows_riv_th_ori=`cat ${fn_river_th} | wc -l`
 
    if [[ ${N_rows_riv_th_ori} -lt ${N_list_target} ]]; then
 
       cp -f ${fn_river_th} ${fn_river_th_ori}
       cp -f ${fn_river_th} ${fn_riv_wk}
 
-      line_end_ori=`tail -n 1  ${fn_river_th}`; #echo ${line_end_ori}
+      line_end_ori=`tail -n 1  ${fn_river_th}`;
 
       for ((k=1; k<=$((N_list_target-N_rows_riv_th_ori+1)); k++))
       do
@@ -365,17 +329,12 @@ for str_fn_river_th in ${list_riv_src_sink[@]}; do
         echo ${msg_tmp};
 
         mv ${fn_riv_wk} ${fn_river_th}
-        # (2023/3/31) cpreq -pf ${fn_river_th} ${COMOUTrerun}/${fn_river_th_std}
 
     else
-        # (2023/3/31) cpreq -pf ${fn_river_th} ${COMOUTrerun}/${fn_river_th_std}
-    	msg_tmp="python output - OK: ${fn_river_th}, N_rows_ori=${N_rows_riv_th_ori}"
-	#msg_tmp="${msg_tmp}\n File archived: cpreq -pf ${fn_river_th} ${COMOUTrerun}/${fn_river_th_std}"
-        #echo -e ${msg_tmp};
+        echo "normal"
     fi
 
 
-    # (2023/3/31) cpreq -pf ${fn_river_th} ${COMOUTrerun}/${fn_river_th_std}
       fn_tmp1=${fn_river_th}_tmp_1
       fn_tmp2=${fn_river_th}_tmp_2    
       fn_tmp3=${fn_river_th}_tmp_3
@@ -414,10 +373,8 @@ for str_fn_river_th in ${list_riv_src_sink[@]}; do
     fn_tmp3=${fn_river_th_std}_tmp_3
     rm -f $fn_tmp1; rm -f $fn_tmp2; rm -f $fn_tmp3 
 
-    # head -n 75 stofs3d.t12z.vsource.th | awk '{print $1,$2,$3,$4,$5}' > tmp_6col; fn_river_th_std=tmp_6col; cp $fn_river_th_std $fn_tmp1
     cpreq -pf ${COMOUT_PREV}/rerun/${fn_river_th_std} ${fn_tmp1}
     tail -n +25 ${fn_tmp1}  > ${fn_tmp2}
-    # tail -n +27 ${fn_tmp1}  > ${fn_tmp2}
 
     line_end_ori=`tail -n 1 ${fn_tmp2}`
     N_row_tmp=`cat ${fn_tmp2} | wc -l`
@@ -433,16 +390,10 @@ for str_fn_river_th in ${list_riv_src_sink[@]}; do
       line_1_new="0 ${line_1_ori_2_end}"
       line_2_new="3600 ${line_2_ori_2_end}" 
       
-      #cp -pf ${fn_tmp2} ${fn_tmp2}_sav
-      #sed -i "1s/.*/${line_1_new}/" ${fn_tmp2}
-      #sed -i "2s/.*/${line_2_new}/" ${fn_tmp2}
-      
-      #tail -n +27 ${fn_tmp1} > ${fn_tmp3}
       tail -n +3 ${fn_tmp2} > ${fn_tmp3}
 
       rm -f ${fn_river_th_std}
       { echo  ${line_1_new}; echo  ${line_2_new}; cat ${fn_tmp3}; } > ${fn_river_th_std} 
-      #{ echo  ${line_1_new}; echo  ${line_2_new}; cat ${fn_tmp2}; } > ${fn_river_th_std}
 
       cpreq -pf ${fn_river_th_std}  ${COMOUTrerun}/${fn_river_th_std}
 

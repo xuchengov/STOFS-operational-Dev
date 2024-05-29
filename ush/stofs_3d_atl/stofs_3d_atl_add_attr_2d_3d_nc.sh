@@ -13,13 +13,13 @@
 
 
 # ---------------------------> Begin ...
-# set -x
+ set -x
 
   fn_this_sh="stofs_3d_atl_add_attr_2d_3d_nc.sh"
 
   echo " ${fn_this_sh} began"  
  
-  pgmout=`pwd`/log_${fn_this_sh}.$$
+  pgmout=log_${fn_this_sh}.$$
   rm -f $pgmout
 
   msg="In ${fn_this_sh}:: begins ... " 
@@ -29,11 +29,12 @@
 # ---------------------------> Global Variables
   fn_mask_land_bnd=${FIXstofs3d}/stofs_3d_atl_mask_land_ocean_bnd_out2d.nc
 
+  i_cnt_file=$1
 
 # -------------------------->
   cd ${DATA}/outputs
   
-  msg="Found nc files: `ls {out2d,horizontalVel?,salinity,temperature,zCoordinates}_?.nc`"
+  msg="Found nc files: `ls {out2d,horizontalVel?,salinity,temperature,zCoordinates}_${i_cnt_file}.nc`"
   echo ${msg}; echo $msg >> $pgmout   
   echo 
 
@@ -53,18 +54,14 @@ echo "Adding time attribute:" $myr $mmon $mday $mhr $utchr
  outfn=("out2d" "temperature" "salinity" "horizontalVelX" "horizontalVelY" "zCoordinates")
 
 
-ict=1
-#for ((iday=1;iday>=-1; iday=iday-1))
-#for ((iday=1;iday>=-3; iday=iday-1))
-for ((iday=1;iday>=-9; iday=iday-1))
 
-  do
+
+ict=${i_cnt_file}
+
      for str in ${outfn[@]};
         do
         if [ -f ./outputs/${str}_${ict}.nc ]
            then
-#            echo ${str}_${ict}.nc
-#            echo $myr $mmon $mday $mhr $utchr
 
             echo "Processing -  add attributes: "  ${str}_${ict}.nc
             ls -l  outputs/${str}_${ict}.nc; 
@@ -83,11 +80,6 @@ for ((iday=1;iday>=-9; iday=iday-1))
               ncatted  -a units,windSpeedX,o,c,"m/s" -a data_horizontal_center,windSpeedX,o,c,"node" -a data_vertical_center,windSpeedX,o,c,"full" -a mesh,windSpeedX,o,c,"SCHISM_hgrid" ./outputs/${str}_${ict}.nc
               ncatted  -a units,windSpeedY,o,c,"m/s" -a data_horizontal_center,windSpeedY,o,c,"node" -a data_vertical_center,windSpeedY,o,c,"full" -a mesh,windSpeedY,o,c,"SCHISM_hgrid" ./outputs/${str}_${ict}.nc
 
-  # Fei: apply obc wl offset
-  #  fn_non_offset=${fn_ori}_non_offset
-  #  mv ${fn_ori} ${fn_non_offset}
-  # 
-  #  ncap2 -O -S ${fn_nco_offset_wl_3dth}  ${fn_non_offset}  ${fn_ori} 
 
               fn_with_mask=./outputs/${str}_${ict}.nc
               fn_non_mask=./outputs/${str}_${ict}.nc_non_mask
@@ -126,21 +118,17 @@ for ((iday=1;iday>=-9; iday=iday-1))
            fi
         fi
      done
-     ict=$((${ict}+1))
-done
+
 
 
 # ------------------> archive
     fn_prefix=${RUN}.${cycle}.fields
 
-    # outfn=("out2d" "temperature" "salinity" "horizontalVelX" "horizontalVelY" "zCoordinates")
     list_var=("out2d" "temperature" "salinity" "horizontalVelX" "horizontalVelY" "zCoordinates")
 
 
-    #list_day_n_f=(1 2 3 4 5 6 7 8 9 10)
-    #list_n_f=(nowcast forecast_day1 forecast_day2 forecast_day3 forecast_day4)
     
-    list_file_cnt=(1 2 3 4 5 6 7 8 9 10)
+    list_file_cnt=(${i_cnt_file})
     list_file_nf_hr=(n001_012 n013_024 f001_012 f013_024 f025_036 f037_048 f049_060 f061_072 f073_084 f085_096)
 
 
@@ -148,11 +136,10 @@ done
 
     file_size_cr=100000000
 
-    let cnt=-1 
     for k_d in ${list_file_cnt[@]}
     do
   
-      let cnt=$cnt+1
+      let cnt=$k_d-1
       str_n_f_k=${list_file_nf_hr[${cnt}]}
  
       for var_k in ${list_var[@]} 
@@ -186,20 +173,6 @@ done
 
     done
 
-
-#    export err=$?
-#    if [ $err -eq 0 ]; then
-#      cp -pf ${fn_shef_merged} ${COMOUT}
-
-#      msg="Creation/Archiving of ${fn_this_sh} was successfully created"
-#      echo $msg; echo $msg >> $pgmout
-
-#      else
-#        mstofs="Creation/Archiving of ${dir_output}/${fn_this_sh} failed"
-#        echo $msg; echo $msg >> $pgmout
-#    fi
-
-#    export err=$?; #err_chk
 
 echo 
 echo "${fn_this_sh} completed "
