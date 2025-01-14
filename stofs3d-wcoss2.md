@@ -5,11 +5,14 @@
 - Basic familiarity with Linux commands and job scheduling systems
 
 ## Model Package Location
-The STOFS Development model package is located at:
+The STOFS3D Atlantic package on WCOSS2 development machine is located at:
 ```bash
 /lfs/h1/nos/estofs/noscrub/mansur.jisan/packages/IT-stofs.v2.1.0
 ```
-
+Location of Operational STOFS on GitHub: 
+```bash
+https://github.com/noaa-ocs-modeling/STOFS-operational
+```
 ## Configuration Steps
 
 ### 1. Script Modifications
