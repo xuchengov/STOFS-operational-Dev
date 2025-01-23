@@ -19,7 +19,7 @@ https://github.com/noaa-ocs-modeling/STOFS-operational
 
 #### A. Main Launch Script
 Modify `launch_stofs.sh`:
-- Replace all instances of `mansur.jisan` with your WCOSS2 username
+- Replace all instances of `mansur.jisan` with your WCOSS2 username and its associated directories
 - Located in the `ecf` directory
 
 #### B. ECFlow Configuration Files
