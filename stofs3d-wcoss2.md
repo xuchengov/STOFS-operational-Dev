@@ -28,20 +28,20 @@ Update the following files in the ECF directory:
 - `jstofs_3d_atl_now_forecast_v2.ecf`
 
 In both files:
-- Replace all instances of `mansur.jisan` with your WCOSS2 username
+- Replace all instances of `mansur.jisan` with your WCOSS2 username and its associated directories
 
 #### C. Job Scripts Configuration
 Navigate to the `jobs` directory and modify:
 
 1. `JSTOFS_3D_ATL_PREP` script:
-   - Replace `mansur.jisan` with your WCOSS2 username
+   - Replace `mansur.jisan` with your WCOSS2 username and its associated directories
    - Update PDY (Production Day) on line 67:
    ```bash
    export PDY=20250112    # Use a date close to current operational date
    ```
 
 2. `JSTOFS_3D_ATL_NOW_FORECAST` script:
-   - Replace `mansur.jisan` with your WCOSS2 username
+   - Replace `mansur.jisan` with your WCOSS2 username and its associated directories
    - Update PDY on line 81:
    ```bash
    export PDY=20250112    # Use a date close to current operational date
